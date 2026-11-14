@@ -16,7 +16,11 @@
   "files": [
     "package.json",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "builder/inverted-indexes.js",
+    "spec/hyperdb/index.js",
+    "spec/hyperdb/messages.js",
+    "spec/hyperschema/index.js"
   ],
   "license": "Apache-2.0",
   "author": "Sean Zellmer <sean@lejeunerenard.com> (http://lejeunerenard.com/)",
