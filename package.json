@@ -1,0 +1,41 @@
+{
+  "name": "timeseries-db",
+  "version": "0.1.0",
+  "description": "A timeseries database built on hyperdb.",
+  "keywords": [
+    "timeseries",
+    "hyperdb"
+  ],
+  "exports": {
+    "./package": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "package.json",
+    "index.js",
+    "index.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "author": "Sean Zellmer <sean@lejeunerenard.com> (http://lejeunerenard.com/)",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier . --write",
+    "lint": "lunte",
+    "test": "brittle-bare test/index.js"
+  },
+  "devDependencies": {
+    "brittle": "^3.19.1",
+    "lunte": "^1.6.0",
+    "prettier": "^3.8.1",
+    "prettier-config-holepunch": "^2.0.0"
+  },
+  "dependencies": {
+    "compact-encoding": "^3.0.0",
+    "hyperdb": "^6.11.0",
+    "hyperschema": "^1.26.0"
+  }
+}
