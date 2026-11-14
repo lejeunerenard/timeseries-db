@@ -3,7 +3,7 @@
   "schema": [
     {
       "name": "tag",
-      "namespace": "@timeseries-db",
+      "namespace": "timeseries-db",
       "compact": false,
       "flagsPosition": -1,
       "fields": [
@@ -23,13 +23,13 @@
     },
     {
       "name": "series-id",
-      "namespace": "@timeseries-db",
+      "namespace": "timeseries-db",
       "alias": "uint",
       "version": 1
     },
     {
       "name": "series-normalized-key-inverted-lookup",
-      "namespace": "@timeseries-db",
+      "namespace": "timeseries-db",
       "compact": false,
       "flagsPosition": -1,
       "fields": [
@@ -54,21 +54,21 @@
         {
           "name": "series-id",
           "required": true,
-          "type": "@@timeseries-db/series-id",
+          "type": "@timeseries-db/series-id",
           "version": 1
         }
       ]
     },
     {
       "name": "series-datapoint",
-      "namespace": "@timeseries-db",
+      "namespace": "timeseries-db",
       "compact": false,
       "flagsPosition": -1,
       "fields": [
         {
           "name": "series-id",
           "required": true,
-          "type": "@@timeseries-db/series-id",
+          "type": "@timeseries-db/series-id",
           "version": 1
         },
         {
@@ -81,6 +81,26 @@
           "name": "value",
           "required": true,
           "type": "int",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "series-id-latest",
+      "namespace": "timeseries-db",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "name",
+          "required": true,
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "id",
+          "required": true,
+          "type": "@timeseries-db/series-id",
           "version": 1
         }
       ]

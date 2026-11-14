@@ -1,10 +1,10 @@
-const Hyperdb  = require('hyperdb/builder')
+const Hyperdb = require('hyperdb/builder')
 const Hyperschema = require('hyperschema')
 
 const SCHEMA_DIR = './spec/hyperschema'
 const DB_DIR = './spec/hyperdb'
 
-const NS = '@timeseries-db'
+const NS = 'timeseries-db'
 
 const schema = Hyperschema.from(SCHEMA_DIR)
 const ns = schema.namespace(NS)
@@ -82,6 +82,26 @@ ns.register({
   ]
 })
 
+// High mark of the series-id counter: one committed row per counter partition,
+// the only one used in v1 is { name: 'latest' }. A `name` field so the
+// collection key is never empty, which keeps the generated keyEncoding a real
+// IndexEncoder. Room for per-namespace/per-measurement counters later.
+ns.register({
+  name: 'series-id-latest',
+  fields: [
+    {
+      name: 'name',
+      type: 'string',
+      required: true
+    },
+    {
+      name: 'id',
+      type: `@${NS}/series-id`,
+      required: true
+    }
+  ]
+})
+
 Hyperschema.toDisk(schema)
 
 // Hyper DB
@@ -124,6 +144,12 @@ dbNs.collections.register({
   name: 'series-data',
   schema: `@${NS}/series-datapoint`,
   key: ['series-id', 'timestamp']
+})
+
+dbNs.collections.register({
+  name: 'series-id-latest',
+  schema: `@${NS}/series-id-latest`,
+  key: ['name']
 })
 
 Hyperdb.toDisk(db, { esm: false })

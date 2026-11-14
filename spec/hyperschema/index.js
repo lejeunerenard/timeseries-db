@@ -11,7 +11,7 @@ const VERSION = 1
 // eslint-disable-next-line no-unused-vars
 let version = VERSION
 
-// @@timeseries-db/tag
+// @timeseries-db/tag
 const encoding0 = {
   preencode(state, m) {
     c.string.preencode(state, m.key)
@@ -32,19 +32,19 @@ const encoding0 = {
   }
 }
 
-// @@timeseries-db/series-normalized-key-inverted-lookup
+// @timeseries-db/series-normalized-key-inverted-lookup
 const encoding1 = {
   preencode(state, m) {
     c.string.preencode(state, m.measurement)
     c.buffer.preencode(state, m.tags)
     c.string.preencode(state, m.field)
-    c.uint.preencode(state, m["series-id"])
+    c.uint.preencode(state, m['series-id'])
   },
   encode(state, m) {
     c.string.encode(state, m.measurement)
     c.buffer.encode(state, m.tags)
     c.string.encode(state, m.field)
-    c.uint.encode(state, m["series-id"])
+    c.uint.encode(state, m['series-id'])
   },
   decode(state) {
     const r0 = c.string.decode(state)
@@ -56,20 +56,20 @@ const encoding1 = {
       measurement: r0,
       tags: r1,
       field: r2,
-      "series-id": r3
+      'series-id': r3
     }
   }
 }
 
-// @@timeseries-db/series-datapoint
+// @timeseries-db/series-datapoint
 const encoding2 = {
   preencode(state, m) {
-    c.uint.preencode(state, m["series-id"])
+    c.uint.preencode(state, m['series-id'])
     c.date.preencode(state, m.timestamp)
     c.int.preencode(state, m.value)
   },
   encode(state, m) {
-    c.uint.encode(state, m["series-id"])
+    c.uint.encode(state, m['series-id'])
     c.date.encode(state, m.timestamp)
     c.int.encode(state, m.value)
   },
@@ -79,9 +79,30 @@ const encoding2 = {
     const r2 = c.int.decode(state)
 
     return {
-      "series-id": r0,
+      'series-id': r0,
       timestamp: r1,
       value: r2
+    }
+  }
+}
+
+// @timeseries-db/series-id-latest
+const encoding3 = {
+  preencode(state, m) {
+    c.string.preencode(state, m.name)
+    c.uint.preencode(state, m.id)
+  },
+  encode(state, m) {
+    c.string.encode(state, m.name)
+    c.uint.encode(state, m.id)
+  },
+  decode(state) {
+    const r0 = c.string.decode(state)
+    const r1 = c.uint.decode(state)
+
+    return {
+      name: r0,
+      id: r1
     }
   }
 }
@@ -109,12 +130,14 @@ function getEnum(name) {
 
 function getEncoding(name) {
   switch (name) {
-    case '@@timeseries-db/tag':
+    case '@timeseries-db/tag':
       return encoding0
-    case '@@timeseries-db/series-normalized-key-inverted-lookup':
+    case '@timeseries-db/series-normalized-key-inverted-lookup':
       return encoding1
-    case '@@timeseries-db/series-datapoint':
+    case '@timeseries-db/series-datapoint':
       return encoding2
+    case '@timeseries-db/series-id-latest':
+      return encoding3
     default:
       throw new Error('Encoder not found ' + name)
   }

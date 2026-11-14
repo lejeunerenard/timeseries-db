@@ -8,14 +8,13 @@ const versions = { schema: version, db: 1 }
 
 const helpers0 = require('../../builder/inverted-indexes.js')
 
-// '@@timeseries-db/series-ids' collection key
-const collection0_key = new IndexEncoder([
-  IndexEncoder.STRING,
-  IndexEncoder.BUFFER,
-  IndexEncoder.STRING
-], { prefix: 0 })
+// '@timeseries-db/series-ids' collection key
+const collection0_key = new IndexEncoder(
+  [IndexEncoder.STRING, IndexEncoder.BUFFER, IndexEncoder.STRING],
+  { prefix: 0 }
+)
 
-function collection0_indexify (record) {
+function collection0_indexify(record) {
   const arr = []
 
   const a0 = record.measurement
@@ -33,11 +32,13 @@ function collection0_indexify (record) {
   return arr
 }
 
-// '@@timeseries-db/series-ids' value encoding
-const collection0_enc = getEncoding('@@timeseries-db/series-normalized-key-inverted-lookup/hyperdb#0')
+// '@timeseries-db/series-ids' value encoding
+const collection0_enc = getEncoding(
+  '@timeseries-db/series-normalized-key-inverted-lookup/hyperdb#0'
+)
 
-// '@@timeseries-db/series-ids' reconstruction function
-function collection0_reconstruct (schemaVersion, keyBuf, valueBuf) {
+// '@timeseries-db/series-ids' reconstruction function
+function collection0_reconstruct(schemaVersion, keyBuf, valueBuf) {
   const key = collection0_key.decode(keyBuf)
   setVersion(schemaVersion)
   const state = { start: 0, end: valueBuf.byteLength, buffer: valueBuf }
@@ -50,8 +51,8 @@ function collection0_reconstruct (schemaVersion, keyBuf, valueBuf) {
   record.field = key[2]
   return record
 }
-// '@@timeseries-db/series-ids' key reconstruction function
-function collection0_reconstruct_key (keyBuf) {
+// '@timeseries-db/series-ids' key reconstruction function
+function collection0_reconstruct_key(keyBuf) {
   const key = collection0_key.decode(keyBuf)
   return {
     measurement: key[0],
@@ -60,16 +61,16 @@ function collection0_reconstruct_key (keyBuf) {
   }
 }
 
-// '@@timeseries-db/series-ids'
+// '@timeseries-db/series-ids'
 const collection0 = {
-  name: '@@timeseries-db/series-ids',
+  name: '@timeseries-db/series-ids',
   id: 0,
   version: 1,
-  encodeKey (record) {
+  encodeKey(record) {
     const key = [record.measurement, record.tags, record.field]
     return collection0_key.encode(key)
   },
-  encodeKeyRange ({ gt, lt, gte, lte } = {}) {
+  encodeKeyRange({ gt, lt, gte, lte } = {}) {
     return collection0_key.encodeRange({
       gt: gt ? collection0_indexify(gt) : null,
       lt: lt ? collection0_indexify(lt) : null,
@@ -77,7 +78,7 @@ const collection0 = {
       lte: lte ? collection0_indexify(lte) : null
     })
   },
-  encodeValue (schemaVersion, collectionVersion, record) {
+  encodeValue(schemaVersion, collectionVersion, record) {
     setVersion(schemaVersion)
     const state = { start: 0, end: 2, buffer: null }
     collection0_enc.preencode(state, record)
@@ -94,19 +95,22 @@ const collection0 = {
   decodedVersion: 0
 }
 
-// '@@timeseries-db/series-by-tag' collection key
-const index1_key = new IndexEncoder([
-  IndexEncoder.STRING,
-  IndexEncoder.STRING,
-  IndexEncoder.STRING,
-  IndexEncoder.BUFFER,
-  IndexEncoder.STRING
-], { prefix: 1 })
+// '@timeseries-db/series-by-tag' collection key
+const index1_key = new IndexEncoder(
+  [
+    IndexEncoder.STRING,
+    IndexEncoder.STRING,
+    IndexEncoder.STRING,
+    IndexEncoder.BUFFER,
+    IndexEncoder.STRING
+  ],
+  { prefix: 1 }
+)
 
-// '@@timeseries-db/series-by-tag' has the following schema defined key map
+// '@timeseries-db/series-by-tag' has the following schema defined key map
 const index1_map = helpers0.tagIndex
 
-function index1_indexify (record) {
+function index1_indexify(record) {
   const arr = []
 
   const a0 = record.key
@@ -120,15 +124,15 @@ function index1_indexify (record) {
   return arr
 }
 
-// '@@timeseries-db/series-by-tag'
+// '@timeseries-db/series-by-tag'
 const index1 = {
-  name: '@@timeseries-db/series-by-tag',
+  name: '@timeseries-db/series-by-tag',
   version: 1,
   id: 1,
-  encodeKey (record) {
+  encodeKey(record) {
     return index1_key.encode(index1_indexify(record))
   },
-  encodeKeyRange ({ gt, lt, gte, lte } = {}) {
+  encodeKeyRange({ gt, lt, gte, lte } = {}) {
     return index1_key.encodeRange({
       gt: gt ? index1_indexify(gt) : null,
       lt: lt ? index1_indexify(lt) : null,
@@ -137,12 +141,18 @@ const index1 = {
     })
   },
   encodeValue: (record) => index1.collection.encodeKey(record),
-  encodeIndexKeys (record, context) {
+  encodeIndexKeys(record, context) {
     const mapped = index1_map(record, context)
     const keys = new Array(mapped.length)
     for (let i = 0; i < mapped.length; i++) {
       const mappedRecord = mapped[i]
-      keys[i] = index1_key.encode([mappedRecord.key, mappedRecord.value, record.measurement, record.tags, record.field])
+      keys[i] = index1_key.encode([
+        mappedRecord.key,
+        mappedRecord.value,
+        record.measurement,
+        record.tags,
+        record.field
+      ])
     }
     return keys
   },
@@ -152,40 +162,38 @@ const index1 = {
 }
 collection0.indexes.push(index1)
 
-// '@@timeseries-db/series-by-field' collection key
-const index2_key = new IndexEncoder([
-  IndexEncoder.STRING,
-  IndexEncoder.STRING,
-  IndexEncoder.BUFFER,
-  IndexEncoder.STRING
-], { prefix: 2 })
+// '@timeseries-db/series-by-field' collection key
+const index2_key = new IndexEncoder(
+  [IndexEncoder.STRING, IndexEncoder.STRING, IndexEncoder.BUFFER, IndexEncoder.STRING],
+  { prefix: 2 }
+)
 
-// '@@timeseries-db/series-by-field' has the following schema defined key map
+// '@timeseries-db/series-by-field' has the following schema defined key map
 const index2_map = helpers0.fieldIndex
 
-function index2_indexify (record) {
+function index2_indexify(record) {
   const a = record
   return a === undefined ? [] : [a]
 }
 
-// '@@timeseries-db/series-by-field'
+// '@timeseries-db/series-by-field'
 const index2 = {
-  name: '@@timeseries-db/series-by-field',
+  name: '@timeseries-db/series-by-field',
   version: 1,
   id: 2,
-  encodeKey (record) {
+  encodeKey(record) {
     return index2_key.encode(index2_indexify(record))
   },
-  encodeKeyRange ({ gt, lt, gte, lte } = {}) {
+  encodeKeyRange({ gt, lt, gte, lte } = {}) {
     return index2_key.encodeRange({
-      gt: (gt || gt === '') ? index2_indexify(gt) : null,
-      lt: (lt || lt === '') ? index2_indexify(lt) : null,
-      gte: (gte || gte === '') ? index2_indexify(gte) : null,
-      lte: (lte || lte === '') ? index2_indexify(lte) : null
+      gt: gt || gt === '' ? index2_indexify(gt) : null,
+      lt: lt || lt === '' ? index2_indexify(lt) : null,
+      gte: gte || gte === '' ? index2_indexify(gte) : null,
+      lte: lte || lte === '' ? index2_indexify(lte) : null
     })
   },
   encodeValue: (record) => index2.collection.encodeKey(record),
-  encodeIndexKeys (record, context) {
+  encodeIndexKeys(record, context) {
     const mapped = index2_map(record, context)
     const keys = new Array(mapped.length)
     for (let i = 0; i < mapped.length; i++) {
@@ -200,16 +208,13 @@ const index2 = {
 }
 collection0.indexes.push(index2)
 
-// '@@timeseries-db/series-data' collection key
-const collection3_key = new IndexEncoder([
-  IndexEncoder.UINT,
-  IndexEncoder.DATE
-], { prefix: 3 })
+// '@timeseries-db/series-data' collection key
+const collection3_key = new IndexEncoder([IndexEncoder.UINT, IndexEncoder.DATE], { prefix: 3 })
 
-function collection3_indexify (record) {
+function collection3_indexify(record) {
   const arr = []
 
-  const a0 = record["series-id"]
+  const a0 = record['series-id']
   if (a0 === undefined) return arr
   arr.push(a0)
 
@@ -220,11 +225,11 @@ function collection3_indexify (record) {
   return arr
 }
 
-// '@@timeseries-db/series-data' value encoding
-const collection3_enc = getEncoding('@@timeseries-db/series-datapoint/hyperdb#3')
+// '@timeseries-db/series-data' value encoding
+const collection3_enc = getEncoding('@timeseries-db/series-datapoint/hyperdb#3')
 
-// '@@timeseries-db/series-data' reconstruction function
-function collection3_reconstruct (schemaVersion, keyBuf, valueBuf) {
+// '@timeseries-db/series-data' reconstruction function
+function collection3_reconstruct(schemaVersion, keyBuf, valueBuf) {
   const key = collection3_key.decode(keyBuf)
   setVersion(schemaVersion)
   const state = { start: 0, end: valueBuf.byteLength, buffer: valueBuf }
@@ -232,29 +237,29 @@ function collection3_reconstruct (schemaVersion, keyBuf, valueBuf) {
   if (type !== 0) throw new Error('Unknown collection type: ' + type)
   collection3.decodedVersion = c.uint.decode(state)
   const record = collection3_enc.decode(state)
-  record["series-id"] = key[0]
+  record['series-id'] = key[0]
   record.timestamp = key[1]
   return record
 }
-// '@@timeseries-db/series-data' key reconstruction function
-function collection3_reconstruct_key (keyBuf) {
+// '@timeseries-db/series-data' key reconstruction function
+function collection3_reconstruct_key(keyBuf) {
   const key = collection3_key.decode(keyBuf)
   return {
-    "series-id": key[0],
+    'series-id': key[0],
     timestamp: key[1]
   }
 }
 
-// '@@timeseries-db/series-data'
+// '@timeseries-db/series-data'
 const collection3 = {
-  name: '@@timeseries-db/series-data',
+  name: '@timeseries-db/series-data',
   id: 3,
   version: 1,
-  encodeKey (record) {
-    const key = [record["series-id"], record.timestamp]
+  encodeKey(record) {
+    const key = [record['series-id'], record.timestamp]
     return collection3_key.encode(key)
   },
-  encodeKeyRange ({ gt, lt, gte, lte } = {}) {
+  encodeKeyRange({ gt, lt, gte, lte } = {}) {
     return collection3_key.encodeRange({
       gt: gt ? collection3_indexify(gt) : null,
       lt: lt ? collection3_indexify(lt) : null,
@@ -262,7 +267,7 @@ const collection3 = {
       lte: lte ? collection3_indexify(lte) : null
     })
   },
-  encodeValue (schemaVersion, collectionVersion, record) {
+  encodeValue(schemaVersion, collectionVersion, record) {
     setVersion(schemaVersion)
     const state = { start: 0, end: 2, buffer: null }
     collection3_enc.preencode(state, record)
@@ -279,30 +284,97 @@ const collection3 = {
   decodedVersion: 0
 }
 
-const collections = [
-  collection0,
-  collection3
-]
+// '@timeseries-db/series-id-latest' collection key
+const collection4_key = new IndexEncoder([IndexEncoder.STRING], { prefix: 4 })
 
-const indexes = [
-  index1,
-  index2
-]
+function collection4_indexify(record) {
+  const a = record.name
+  return a === undefined ? [] : [a]
+}
 
-module.exports = { versions, collections, indexes, resolveCollection, resolveIndex }
+// '@timeseries-db/series-id-latest' value encoding
+const collection4_enc = getEncoding('@timeseries-db/series-id-latest/hyperdb#4')
 
-function resolveCollection (name) {
-  switch (name) {
-    case '@@timeseries-db/series-ids': return collection0
-    case '@@timeseries-db/series-data': return collection3
-    default: return null
+// '@timeseries-db/series-id-latest' reconstruction function
+function collection4_reconstruct(schemaVersion, keyBuf, valueBuf) {
+  const key = collection4_key.decode(keyBuf)
+  setVersion(schemaVersion)
+  const state = { start: 0, end: valueBuf.byteLength, buffer: valueBuf }
+  const type = c.uint.decode(state)
+  if (type !== 0) throw new Error('Unknown collection type: ' + type)
+  collection4.decodedVersion = c.uint.decode(state)
+  const record = collection4_enc.decode(state)
+  record.name = key[0]
+  return record
+}
+// '@timeseries-db/series-id-latest' key reconstruction function
+function collection4_reconstruct_key(keyBuf) {
+  const key = collection4_key.decode(keyBuf)
+  return {
+    name: key[0]
   }
 }
 
-function resolveIndex (name) {
+// '@timeseries-db/series-id-latest'
+const collection4 = {
+  name: '@timeseries-db/series-id-latest',
+  id: 4,
+  version: 1,
+  encodeKey(record) {
+    const key = [record.name]
+    return collection4_key.encode(key)
+  },
+  encodeKeyRange({ gt, lt, gte, lte } = {}) {
+    return collection4_key.encodeRange({
+      gt: gt ? collection4_indexify(gt) : null,
+      lt: lt ? collection4_indexify(lt) : null,
+      gte: gte ? collection4_indexify(gte) : null,
+      lte: lte ? collection4_indexify(lte) : null
+    })
+  },
+  encodeValue(schemaVersion, collectionVersion, record) {
+    setVersion(schemaVersion)
+    const state = { start: 0, end: 2, buffer: null }
+    collection4_enc.preencode(state, record)
+    state.buffer = b4a.allocUnsafe(state.end)
+    state.buffer[state.start++] = 0
+    state.buffer[state.start++] = collectionVersion
+    collection4_enc.encode(state, record)
+    return state.buffer
+  },
+  trigger: null,
+  reconstruct: collection4_reconstruct,
+  reconstructKey: collection4_reconstruct_key,
+  indexes: [],
+  decodedVersion: 0
+}
+
+const collections = [collection0, collection3, collection4]
+
+const indexes = [index1, index2]
+
+module.exports = { versions, collections, indexes, resolveCollection, resolveIndex }
+
+function resolveCollection(name) {
   switch (name) {
-    case '@@timeseries-db/series-by-tag': return index1
-    case '@@timeseries-db/series-by-field': return index2
-    default: return null
+    case '@timeseries-db/series-ids':
+      return collection0
+    case '@timeseries-db/series-data':
+      return collection3
+    case '@timeseries-db/series-id-latest':
+      return collection4
+    default:
+      return null
+  }
+}
+
+function resolveIndex(name) {
+  switch (name) {
+    case '@timeseries-db/series-by-tag':
+      return index1
+    case '@timeseries-db/series-by-field':
+      return index2
+    default:
+      return null
   }
 }
