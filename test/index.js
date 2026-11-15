@@ -75,7 +75,7 @@ test('tag order does not matter, one series-ids row per identity', async (t) => 
   )
   t.is(a, b)
   await batch.flush()
-  const rows = await ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } })
+  const rows = await drainOf(() => ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } }))
   t.is(rows.length, 1)
   t.alike(rows[0].tags, [
     { key: 'host', value: 'a' },
@@ -101,7 +101,7 @@ test('tag value boundaries cannot collide', async (t) => {
   )
   t.not(a, b)
   await batch.flush()
-  const rows = await ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } })
+  const rows = await drainOf(() => ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } }))
   t.is(rows.length, 2)
   await ts.close()
 })
@@ -285,12 +285,12 @@ test('a cancelled transaction leaves the db unchanged and must be closed', async
       await batch.close()
     }
   }, /^Error: aborted batch$/)
-  const rows = await ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } })
+  const rows = await drainOf(() => ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } }))
   t.is(rows.length, 0)
   const batch = await ts.exclusiveTransaction()
   await batch.insert('cpu', [{ key: 'host', value: 'a' }], 'load', t0, 1)
   await batch.flush()
-  const after = await ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } })
+  const after = await drainOf(() => ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } }))
   t.is(after.length, 1)
   await ts.close()
 })
@@ -394,7 +394,7 @@ test('prefix scan on series-ids: every series under a measurement, no more', asy
   )
   await seed.flush()
 
-  const rows = await ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } })
+  const rows = await drainOf(() => ts.findSeries({ gte: { measurement: 'cpu' }, lte: { measurement: 'cpu' } }))
   t.is(rows.length, 3)
   const measurements = rows.map((row) => row.measurement)
   t.alike(measurements, ['cpu', 'cpu', 'cpu'])
@@ -418,7 +418,7 @@ test('identity round-trip: tags decode back to normalized pairs', async (t) => {
   )
   await seed.flush()
 
-  const rows = await ts.findSeries(
+  const rows = await drainOf(() => ts.findSeries(
     seriesOf(
       'cpu',
       [
@@ -427,7 +427,7 @@ test('identity round-trip: tags decode back to normalized pairs', async (t) => {
       ],
       'load'
     )
-  )
+  ))
   t.is(rows.length, 1)
   t.alike(rows[0].tags, [
     { key: 'host', value: 'a' },

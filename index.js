@@ -38,6 +38,7 @@
 // throws `QueryRequiresIdentityError`.
 
 const b4a = require('b4a')
+const { Transform } = require('streamx')
 const { normalizeTags, denormalizeTags } = require('./builder/inverted-indexes.js')
 
 const requiredCollections = [
@@ -277,9 +278,13 @@ class Timeseries {
 
   async _findSeries(query, options) {
     const { name, range } = await this._encodeQueryRange(query, 'series')
-    const rows = await this.db.find(name, range, this._streamOptions(query, options)).toArray()
-    for (const row of rows) row.tags = denormalizeTags(row.tags)
-    return rows
+    return this.db.find(name, range, this._streamOptions(query, options)).pipe(new Transform({
+      transform (row, cb) {
+        row.tags = denormalizeTags(row.tags)
+        this.push(row)
+        cb()
+      }
+    }))
   }
 
   async _get(measurement, tags, field, timestamp) {
