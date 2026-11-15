@@ -354,8 +354,9 @@ class Timeseries {
       range = { gte: { 'series-id': seriesId }, lte: { 'series-id': seriesId } }
     }
 
-    const points = await this.db.find('@timeseries-db/series-data', range).toArray()
-    for (const point of points) await this.db.delete('@timeseries-db/series-data', point)
+    for await (const point of this.db.find('@timeseries-db/series-data', range)) {
+      await this.db.delete('@timeseries-db/series-data', point)
+    }
     this._dropCachedSeries(ids)
   }
 
