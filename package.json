@@ -17,6 +17,7 @@
     "package.json",
     "index.js",
     "index.d.ts",
+    "generate-schema.js",
     "builder/inverted-indexes.js",
     "spec/hyperdb/index.js",
     "spec/hyperdb/messages.js",
