@@ -14,7 +14,7 @@ definitions:
 ```js
 const Hyperschema = require('hyperschema')
 const Hyperdb = require('hyperdb/builder')
-const { generateSchema, generateDb } = require('timeseries-db/generate-schema.js')
+const { generateSchema, generateDb } = require('timeseries-db/generate-schema')
 
 // applies the tag, series-id, series-datapoint and counter structs
 const schema = Hyperschema.from('./spec/hyperschema')
